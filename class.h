@@ -82,8 +82,8 @@ int atk_getter()
 {return atk;}
 
 
-void obr_setter(int iatk)
-{atk=iatk;}
+void obr_setter(int iobr)
+{obr=iobr;}
 
 
 int obr_getter()
@@ -409,6 +409,8 @@ friend void tworzenie_postaci();
 friend class Przedmiot;
 friend class Bron;
 friend class Zbroja;
+friend bool test_na_intel(Bohater *b, int trudnosc);
+friend bool test_na_zre(Bohater *b, int trudnosc);
 
 	int udzwig=100;
 	int level;
@@ -555,10 +557,55 @@ cin>>a;
 
 if (a=="tak" or a=="Tak"){ 
 cout<<ekwipunek[j-1].nazwa_getter()<<" zostaje usuniety"<<endl;
+
+
+if (ekwipunek[j-1].jedzenie)
+{
+	for(int i=0;i<ejedzenie.size();i++)
+	{if(ejedzenie[i].nazwa_getter()==ekwipunek[j-1].nazwa_getter())
+	{ejedzenie.erase(ejedzenie.begin()+i);}}
+}
+
+if (ekwipunek[j-1].zbroja)
+{
+	for(int i=0;i<ezbroja.size();i++)
+	{if(ezbroja[i].nazwa_getter()==ekwipunek[j-1].nazwa_getter())
+	{ezbroja.erase(ezbroja.begin()+i);}}
+}
+
+if (ekwipunek[j-1].bron)
+{
+	for(int i=0;i<ebron.size();i++)
+	{if(ebron[i].nazwa_getter()==ekwipunek[j-1].nazwa_getter())
+	{ebron.erase(ebron.begin()+i);}}
+}
+
+if (ekwipunek[j-1].mikstura)
+{
+	for(int i=0;i<emikstura.size();i++)
+	{if(emikstura[i].nazwa_getter()==ekwipunek[j-1].nazwa_getter())
+	{emikstura.erase(emikstura.begin()+i);}}
+}
+
+
+
+
 ekwipunek.erase(ekwipunek.begin()+j-1);
+
+
+
+
+
+
+
+
+
+
 }
 else{}
 }
+
+
 
 void wyswietlanie_jedzenia()
 {
@@ -582,7 +629,7 @@ switch(w)
 	case 1:{ break;}
 	case 2:{
 		
-		cout<<"Podaj numer jedzenia, ktore chcesz zjesc"<<endl;
+if(ejedzenie.empty()==0)	cout<<"Podaj numer jedzenia, ktore chcesz zjesc"<<endl;
 	int j;
 	cin>>j;
 
@@ -591,16 +638,25 @@ wyswietlanie_jedzenia();}
 else if(hp_getter()+ejedzenie[j-1].hp_boost_getter()<max_hp_getter())
 {hp_setter(hp_getter()+ejedzenie[j-1].hp_boost_getter());
 cout<<"Twoje zycie zwieksza sie o "<<ejedzenie[j-1].hp_boost_getter()<<" wynosi teraz "<<hp_getter()<<"/"<<max_hp_getter()<<endl;
+for(int i=0;i<ekwipunek.size();i++){if(ekwipunek[i].nazwa_getter()==ejedzenie[j-1].nazwa_getter()){ekwipunek.erase(ekwipunek.begin()+i); break;}}
+	
+	ejedzenie.erase(ejedzenie.begin()+j-1);
 wyswietlanie_jedzenia();}
 else if(hp_getter()+ejedzenie[j-1].hp_boost_getter()>max_hp_getter())
 {hp_setter(max_hp_getter());
 	cout<<"Twoje zycie zwieksza sie i wynosi"<<hp_getter()<<"/"<<max_hp_getter()<<endl;
+	
+	for(int i=0;i<ekwipunek.size();i++){if(ekwipunek[i].nazwa_getter()==ejedzenie[j-1].nazwa_getter()){ekwipunek.erase(ekwipunek.begin()+i); break;}}
+	
+	ejedzenie.erase(ejedzenie.begin()+j-1);
+	
 	wyswietlanie_jedzenia();}
 	
 break;
 }
 default:{ cout<<"Brak takiej opcji"<<endl;
-wyswietlanie_jedzenia();}
+//wyswietlanie_jedzenia();
+}
 }
 }
 
@@ -614,16 +670,18 @@ for(int i=0;i<ezbroja.size();i++)
 	cout<<i+1<<"."<<ezbroja[i].nazwa<<" wspolczynnik ochrony wynosi "<<ezbroja[i].obr_boost_getter()<<endl;
 	if(zal_zbroja.nazwa_getter()== ezbroja[i].nazwa_getter()){cout<<"(zalozona)"<<endl;;}             
 }
-cout<<"--------------------\n1.Zaloz zboroje\n2.Powrot\n";
+if(ezbroja.empty())cout<<"1.Powrot"<<endl;
+
+cout<<"--------------------\n1.Powrot\n2.Zaloz zbroje\n";
 
 int w;
 cin>>w;
 
 switch(w)
 {
-	case 2:{ break;}
-case 1:{
-	cout<<"Ktora zbroje chcesz zalozyc?"<<endl;
+	case 1:{ break;}
+case 2:{
+	if(ezbroja.empty()==0) cout<<"Ktora zbroje chcesz zalozyc?"<<endl;
 	int j;
 	cin>>j;
 	
@@ -632,7 +690,8 @@ case 1:{
 	wyswietlanie_zbroi();
 };
 default:{ cout<<"Brak takiej opcji"<<endl;
-wyswietlanie_zbroi();}}
+///wyswietlanie_zbroi();
+}}
 }
 
 void wyswietlanie_broni()
@@ -644,17 +703,18 @@ for(int i=0;i<ebron.size();i++)
 {
 	cout<<i+1<<"."<<ebron[i].nazwa<<" sila ataku broni wynosi"<<ebron[i].atk_boost_getter()<<endl;	                          
 }
+if(ebron.empty())cout<<"1.Powrot"<<endl;
 
-cout<<"--------------------\n1.Zaloz bron\n2.Powrot\n";
+cout<<"--------------------\n1.Powrot\n2.Zaloz bron\n";
 
 int w;
 cin>>w;
 
 switch(w)
 {
-	case 2:{break;}
-case 1:{
-	cout<<"Ktora bron chcesz zalozyc?"<<endl;
+	case 1:{break;}
+case 2:{
+	if(ebron.empty()==0)cout<<"Ktora bron chcesz zalozyc?"<<endl;
 	int j;
 	cin>>j;
 	
@@ -663,7 +723,8 @@ case 1:{
 	wyswietlanie_broni();
 };
 default:{ cout<<"Brak takiej opcji"<<endl;
-wyswietlanie_zbroi();}}
+//wyswietlanie_zbroi();
+}}
 };
 
 void wyswietlanie_mikstur()
@@ -726,8 +787,14 @@ cout<<"ZRECZNOSC="<<zre_getter()<<endl;
 cout<<"INTELIGENCJA="<<intel_getter()<<endl;
 
 cout<<"--------------------------------"<<endl;
-cout<<"Zalozona zbroja :"<<zal_zbroja.nazwa_getter()<<" o wspolczynniku obrony ="<<zal_zbroja.obr_boost_getter()<<endl;
-cout<<"Uzywana bron : "<<zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<zal_bron.atk_boost_getter()<<endl;
+
+cout<<"Zalozona zbroja :"<<zal_zbroja.nazwa_getter()<<" o wspolczynniku obrony =";
+if(zal_zbroja.obr_boost_getter()<=100)cout<<0<<endl;
+else cout<<zal_zbroja.obr_boost_getter()<<endl;
+cout<<"Uzywana bron : "<<zal_bron.nazwa_getter()<<" o wspolczyniku ataku =";
+if(zal_bron.atk_boost_getter()<=100)cout<<0<<endl;   
+else cout<<zal_bron.atk_boost_getter()<<endl;
+
 }
 
 };
@@ -851,26 +918,12 @@ else{};
 }
 }
 }
-//Funkcja wywietlani atrybutow
 
 
 
 
 
-void wyswietlanie_atrybutow(Bohater* w)
 
-{cout<<"NAZWA POSTACI ="<<w->nazwa_getter()<<endl;
-cout<<"Poziom: "<<w->level_getter()<<endl;
-cout<<"HP: "<<w->hp_getter()<<"/"<<w->max_hp_getter()<<endl;
-cout<<"ATAK ="<<w->atk_getter()<<endl;
-cout<<"OBRONA="<<w->obr_getter()<<endl;
-cout<<"ZRECZNOSC="<<w->zre_getter()<<endl;
-cout<<"INTELIGENCJA="<<w->intel_getter()<<endl;
-
-cout<<"--------------------------------"<<endl;
-cout<<"Zalozona zbroja :"<<w->zal_zbroja.nazwa_getter()<<" o wspolczynniku obrony ="<<w->zal_zbroja.obr_boost_getter()<<endl;
-cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<w->zal_bron.atk_boost_getter()<<endl;
-}
 
 
 
@@ -898,12 +951,15 @@ cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<
 		cout<<"OBRONA=5"<<endl;
 		cout<<"ZRECZNOSC=5"<<endl;
 		cout<<"INTELIGENCJA=5"<<endl;
+	
 		
-		while(pula>0)
+				while(pula>0)
 		{cout<<"Do czego chcesz dodac punkty? : 1.ATK, 2.OBR, 3.ZRE, 4.INT"<<endl;
-		int wybor;
-		cin>>wybor;
+		
+		int wybor=0;
 		int ile=0;
+		cin>>wybor;
+		
 		
         
        		
@@ -917,7 +973,7 @@ cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<
 		b->atk_setter(b->atk_getter()+ile);
 		pula=pula-ile;
 		}
-		else cout<<"nie masz tyle punktow"<<endl;
+		else {cout<<"nie masz tyle punktow"<<endl;};
 		break;}
 		
 		case 2:{cout<<"Ile punktow chcesz dodac do obrony?"<<endl;
@@ -926,7 +982,7 @@ cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<
 		b->obr_setter(b->obr_getter()+ile);
 		pula=pula-ile;
 		}
-		else cout<<"nie masz tyle punktow"<<endl;
+		else {cout<<"nie masz tyle punktow"<<endl;}
 		break;}
 		
 		case 3:{cout<<"Ile punktow chcesz dodac do zrecznosci?"<<endl;
@@ -935,7 +991,7 @@ cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<
 		b->zre_setter(b->zre_getter()+ile);
 		pula=pula-ile;
 		}
-		else cout<<"nie masz tyle punktow"<<endl;
+		else {cout<<"nie masz tyle punktow"<<endl;}
 		break;}
 		
 		case 4:{cout<<"Ile punktow chcesz dodac do inteligencji?"<<endl;
@@ -944,7 +1000,7 @@ cout<<"Uzywana bron : "<<w->zal_bron.nazwa_getter()<<" o wspolczyniku ataku ="<<
 		b->intel_setter(b->intel_getter()+ile);
 		pula=pula-ile;
 		}
-		else cout<<"nie masz tyle punktow"<<endl;
+		else{ cout<<"nie masz tyle punktow"<<endl;}
 		break;}
 		
 		}
@@ -958,6 +1014,36 @@ b->wyswietlanie_atrybutow();
 
 
 
+bool test_na_zre(Bohater *b, int trudnosc)
+{
+	srand(time(NULL));
+int rzut=rand()%250+50;
+float wspol=(float)rzut/100;
+float zre=(float)b->zre_getter();	
+float wynik=zre*wspol;
+
+if(wynik>trudnosc*3)return 1;
+else return 0;	
+	
+	
+	
+	
+}
+
+bool test_na_intel(Bohater *b, int trudnosc)
+{
+	srand(time(NULL));
+int rzut=rand()%250+50;
+float wspol=(float)rzut/100;
+float intel=(float)b->intel_getter();	
+float wynik=intel*wspol;
+
+if(wynik>trudnosc*3)return 1;
+else return 0;	
+
+}
+
+//Handel i tworzenie NPC
 
 
 
