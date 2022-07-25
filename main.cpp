@@ -11,14 +11,14 @@ using namespace std;
 int main() 
 {
 
-Bohater a("Postac",100,5,5,5,5);
+Bohater a("Postac",100,1000,5,5,5);
 
-test_na_zre(&a,3);
+Postac *wsk=stworz_wrogow("wilki",1);
 
-	
-	
-	
-	
+walka(&a,wsk);
+
+a.menu_glowne();
+
 	
 	
 	

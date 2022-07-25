@@ -13,6 +13,9 @@ using namespace std;
 class Przedmiot;
 class Jedzenie;
 class Bohater;
+class Bron;
+class Zbroja;
+class Mikstura;
 
 
 
@@ -48,7 +51,12 @@ int posiadane_zloto=0;
 	
 
 public:
-vector<Przedmiot>ekwipunek ;
+vector<Przedmiot>ekwipunek;
+vector<Jedzenie>ejedzenie;
+vector<Bron>ebron;
+vector<Zbroja>ezbroja;
+vector<Mikstura>emikstura;
+
 
 
 
@@ -109,58 +117,13 @@ virtual int moc_zbroi_getter(){return 1;};
 
 
 
-
-
-
-
-//KLASA	WROG
-
-
-
-class Wrog: public Postac
-{
-friend Postac* stworz_wrogow(string rodzaj, int ilosc);
-friend void walka(Postac * bohater,Postac *wrog );
-
-	
-public:
-Wrog()
-:Postac(){};
-
-Wrog(string nazwa, int hp, int atk, int obr, int zre)
-:Postac(nazwa, hp, atk, obr, zre){};
-
-virtual void branie_przedmiotu(Przedmiot *n ){};
-
-virtual int moc_broni_getter(){return 100;};
-virtual int moc_zbroi_getter(){return 100;};
-	
- 	~ Wrog(){};
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //KLASA	PRZEMIOT
 
 //KLASA	PRZEMIOT
 
 class Przedmiot
 {
+friend class NPC;
 friend class Bohater;
 friend void walka(Postac* bohater, Postac* wrog);
 //friend Postac * stworz_wrogow(string rodzaj, int ilosc);
@@ -203,14 +166,6 @@ virtual int specjalna_cecha_getter(){return 0;};
 
 
 
-
-
-
-
-
-
-
-//KLASy roznych przedmiotow
 	
 class Jedzenie:public Przedmiot
 {
@@ -315,6 +270,105 @@ int specjalna_cecha_getter(){return atk_boost;};
 
 
 
+//KLASA	WROG
+
+
+
+class NPC: public Postac
+{
+friend Postac* stworz_wrogow(string rodzaj, int ilosc);
+friend void walka(Postac * bohater,Postac *wrog );
+friend class Przedmiot;
+	
+public:
+NPC()
+:Postac(){};
+
+NPC(string nazwa, int hp, int atk, int obr, int zre)
+:Postac(nazwa, hp, atk, obr, zre){};
+
+virtual void branie_przedmiotu(Przedmiot *n )
+{
+
+
+ekwipunek.push_back(*n);
+
+if(n->jedzenie==1)
+{
+
+Jedzenie *wsk;
+wsk=(Jedzenie*)n;
+wsk->hp_boost_setter(n->specjalna_cecha_getter());
+ejedzenie.push_back(*wsk);};
+
+
+if(n->zbroja==1){
+	Zbroja *wsk;
+wsk=(Zbroja*)n;
+wsk->obr_boost_setter(n->specjalna_cecha_getter());
+ezbroja.push_back(*wsk);};
+
+
+if(n->bron==1){
+Bron*wsk;
+wsk=(Bron*)n;
+wsk->atk_boost_setter(n->specjalna_cecha_getter());
+ebron.push_back(*wsk);};
+
+
+if(n->mikstura==1){
+	
+	Mikstura *wsk;
+wsk=(Mikstura*)n;
+emikstura.push_back(*wsk);};
+	
+	
+	
+	};
+
+virtual int moc_broni_getter(){return 100;};
+virtual int moc_zbroi_getter(){return 100;};
+	
+ 	~ NPC(){};
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//KLASy roznych przedmiotow
+
+
+
 
 
 //FUNKCJA	TWORZENIA	WROGOW	DYNAMICZNIE
@@ -324,7 +378,7 @@ Postac * stworz_wrogow(string rodzaj, int ilosc)
 	
 if(rodzaj=="wilki")
 	{
-		Postac*wsk= new Wrog[ilosc];
+		Postac*wsk= new NPC[ilosc];
 	
 		for(int i=0;i<ilosc; i++)
 		{
@@ -333,12 +387,10 @@ if(rodzaj=="wilki")
 	 	wsk[i].atk_setter(3);
 	 	wsk[i].obr_setter(3);
 	 	wsk[i].zre_setter(5);
-	 	
-	 Przedmiot skora_wilka("skora wilka",5,10); 	 	
+	 	 	 	
 	 Jedzenie mieso_wilka("mieso wilka",2,5,5);
 	  
-	  wsk[i].ekwipunek.push_back(skora_wilka);
-	  wsk[i].ekwipunek.push_back(mieso_wilka);
+	  wsk[i].branie_przedmiotu(&mieso_wilka);
 	  	
 	 	
 	 	}
@@ -349,7 +401,7 @@ if(rodzaj=="wilki")
 	 
 if(rodzaj=="ogry")
 	{
-		Postac *wsk= new Wrog[ilosc];
+		Postac *wsk= new NPC[ilosc];
 	
 		for(int i=0;i<ilosc; i++)
 		{
@@ -366,7 +418,7 @@ if(rodzaj=="ogry")
 	 
 if(rodzaj=="szczury")
 	{
-		Postac *wsk= new Wrog[ilosc];
+		Postac *wsk= new NPC[ilosc];
 	
 		for(int i=0;i<ilosc; i++)
 		{
@@ -420,11 +472,6 @@ friend bool test_na_zre(Bohater *b, int trudnosc);
 	
 	
 	
-vector<Przedmiot>ekwipunek;
-vector<Jedzenie>ejedzenie;
-vector<Bron>ebron;
-vector<Zbroja>ezbroja;
-vector<Mikstura>emikstura;
 
 public:
 	Bron zal_bron;
@@ -450,7 +497,10 @@ int waga_ekwipunku_getter()
 	}
 	return waga_e;
 }
+
 	
+		
+				
 void branie_przedmiotu(Przedmiot *n )
 {
 	if(udzwig>=waga_ekwipunku_getter()	and n->waga<=udzwig-waga_ekwipunku_getter())	
@@ -909,8 +959,34 @@ cout<<"Ktory przedmiot chcesz zabrac"<<endl;
 int j;
 cin>>j;
 
-Przedmiot temp(wrog[0].ekwipunek[j-1]);
-bohater->branie_przedmiotu(&temp);
+Przedmiot *p;
+
+if(wrog->ekwipunek[j-1].jedzenie)
+{for(int i=0;i<wrog->ejedzenie.size();i++)
+{if(wrog->ejedzenie[i].nazwa_getter()==wrog->ekwipunek[j-1].nazwa_getter())
+{p=&wrog->ejedzenie[i];
+break;}}}
+
+if(wrog->ekwipunek[j-1].zbroja)
+{for(int i=0;i<wrog->ezbroja.size();i++)
+{if(wrog->ezbroja[i].nazwa_getter()==wrog->ekwipunek[j-1].nazwa_getter())
+{p=&wrog->ezbroja[i];
+break;}}}
+
+if(wrog->ekwipunek[j-1].bron)
+{for(int i=0;i<wrog->ebron.size();i++)
+{if(wrog->ebron[i].nazwa_getter()==wrog->ekwipunek[j-1].nazwa_getter())
+{p=&wrog->ebron[i];
+break;}}}
+
+if(wrog->ekwipunek[j-1].mikstura)
+{for(int i=0;i<wrog->emikstura.size();i++)
+{if(wrog->emikstura[i].nazwa_getter()==wrog->ekwipunek[j-1].nazwa_getter())
+{p=&wrog->emikstura[i];
+break;}}}
+
+bohater->branie_przedmiotu(p);
+
 wrog->ekwipunek.erase(wrog->ekwipunek.begin()+j-1);
 
 }
